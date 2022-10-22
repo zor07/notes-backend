@@ -1,0 +1,31 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        enable_lazy_load_no_trans: true
+        types:
+          print:
+            banner: false
+  datasource:
+    driverClassName: org.postgresql.Driver
+    username: user
+    password: pass
+    url: jdbc:postgresql://localhost:5432/db
+  liquibase:
+    change-log: classpath:db/changelog/changelog.xml
+
+logging:
+  level:
+    liquidbase: INFO
+
+server:
+  port: 7777
