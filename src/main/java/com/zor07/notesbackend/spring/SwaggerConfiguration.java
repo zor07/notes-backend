@@ -26,7 +26,7 @@ public class SwaggerConfiguration {
                 .securityContexts(List.of(securityContext()))
                 .securitySchemes(List.of(apiKey()))
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.zor07.nofapp.api"))
+                .apis(RequestHandlerSelectors.basePackage("com.zor07.notesbackend.api"))
                 .paths(PathSelectors.any())
                 .build();
     }
