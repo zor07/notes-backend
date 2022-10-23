@@ -24,7 +24,6 @@
         <org.assertj.version>3.21.0</org.assertj.version>
         <org.testcontainers.version>1.16.0</org.testcontainers.version>
         <io.springfox.version>3.0.0</io.springfox.version>
-        <version.aws>2.17.100</version.aws>
         <version.guava>31.0.1-jre</version.guava>
     </properties>
     <dependencies>
@@ -92,17 +91,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${version.guava}</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>${version.aws}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>netty-nio-client</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
