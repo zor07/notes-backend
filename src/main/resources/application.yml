@@ -17,9 +17,9 @@ spring:
             banner: false
   datasource:
     driverClassName: org.postgresql.Driver
-    username: user
-    password: pass
-    url: jdbc:postgresql://localhost:5432/db
+    username: nifchaqqmhpguo
+    password: 000593b9943fbfff0478bb30dc678b73f46d56f08a4466767f45b87e3129e846
+    url: jdbc:postgresql://ec2-54-246-185-161.eu-west-1.compute.amazonaws.com:5432/delmgn7c5pjkus
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
 
@@ -28,4 +28,4 @@ logging:
     liquidbase: INFO
 
 server:
-  port: 7777
+  port: 8888
