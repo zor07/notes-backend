@@ -20,12 +20,14 @@ spring:
     username: user
     password: pass
     url: jdbc:postgresql://localhost:5432/db
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 50
+      idle-timeout: 30000
+      auto-commit: false
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
 
 logging:
   level:
     liquidbase: INFO
-
-server:
-  port: 7777
