@@ -4,9 +4,22 @@ volumes:
   pg_project:
 
 services:
+  notes-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks: ["notes-backend"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pg_db:5432/db
+    ports:
+      - "8081:8080"
+    depends_on:
+      - pg_db
+
   pg_db:
     image: postgres
     restart: always
+    networks: ["notes-backend"]
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
@@ -15,3 +28,6 @@ services:
       - pg_project:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
+networks:
+  notes-backend:
