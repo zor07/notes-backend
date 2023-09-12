@@ -5,9 +5,7 @@ volumes:
 
 services:
   notes-backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     networks: ["notes-backend"]
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://pg_db:5432/db

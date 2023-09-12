@@ -1,15 +1,11 @@
-FROM eclipse-temurin:17-jdk-focal
-
-WORKDIR /app
-
-COPY .mvn/ .mvn
+FROM maven:3.8.6-eclipse-temurin-17 as builder
+WORKDIR /opt/app
 COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline
+COPY ./src ./src
+RUN mvn clean install -DskipTests
 
-COPY src ./src
-
-ENV JAVA_OPTS="\
-  -Xms512M \
-  -Xmx1024M"
-
-CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.jvmArguments=\"${JAVA_OPTS}\""]
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /opt/app
+EXPOSE 8080
+COPY --from=builder /opt/app/target/*.jar /opt/app/*.jar
+ENTRYPOINT ["java", "-jar", "/opt/app/*.jar" ]
