@@ -78,7 +78,7 @@ public class SecurityConfig {
     configuration.setAllowCredentials(true);
     configuration.setAllowedHeaders(Collections.singletonList("*"));
     configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-    configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
+    configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     final var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
@@ -90,7 +90,7 @@ public class SecurityConfig {
       @Override
       public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
+            .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS");
       }
     };
   }
