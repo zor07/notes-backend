@@ -1,6 +1,7 @@
 package com.zor07.notesbackend.api.v1;
 
 import com.zor07.notesbackend.api.v1.dto.auth.AuthenticationDto;
+import com.zor07.notesbackend.api.v1.dto.auth.RegisterDto;
 import com.zor07.notesbackend.api.v1.dto.auth.TokensDto;
 import com.zor07.notesbackend.api.v1.dto.auth.UserInfoDto;
 import com.zor07.notesbackend.exception.IllegalAuthorizationHeaderException;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
+import java.util.stream.Collectors;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -39,6 +45,40 @@ public class AuthController {
   @Autowired
   public AuthController(final UserService userService) {
     this.userService = userService;
+  }
+
+  @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "Registers new user and returns tokens", response = TokensDto.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 201, message = "Successfully registered user"),
+          @ApiResponse(code = 400, message = "Payload contains illegal data"),
+          @ApiResponse(code = 409, message = "Username already exists")
+  })
+  public ResponseEntity<TokensDto> register(@Valid @RequestBody final RegisterDto registerDto,
+                                            final HttpServletRequest request) {
+    if (userService.getUser(registerDto.username()) != null) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "User with such username already exists");
+    }
+
+    final var newUser = new com.zor07.notesbackend.entity.User();
+    newUser.setUsername(registerDto.username());
+    newUser.setPassword(registerDto.password());
+    newUser.setName(registerDto.name());
+    userService.saveUser(newUser);
+    userService.addRoleToUser(newUser.getUsername(), com.zor07.notesbackend.security.UserRole.ROLE_USER.getRoleName());
+    final var savedUser = userService.getUser(newUser.getUsername());
+
+    final var issuer = request.getRequestURL().toString();
+    final var accessToken = SecurityUtils.createAccessToken(savedUser, issuer);
+    final var authorities = savedUser.getRoles()
+            .stream()
+            .map(role -> new SimpleGrantedAuthority(role.getName()))
+            .collect(Collectors.toList());
+    final var refreshToken = SecurityUtils.createRefreshToken(
+            new org.springframework.security.core.userdetails.User(savedUser.getUsername(), savedUser.getPassword(), authorities),
+            issuer);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(new TokensDto(accessToken, refreshToken));
   }
 
 

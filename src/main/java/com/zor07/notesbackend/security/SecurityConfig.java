@@ -49,7 +49,8 @@ public class SecurityConfig {
                     .antMatchers("/api/v1/auth/login/**",
                             "/spring-security-rest/**",
                             "/swagger-ui/**",
-                            "/api/v1/auth/token/refresh/**").permitAll()
+                            "/api/v1/auth/token/refresh/**",
+                            "/api/v1/auth/register/**").permitAll()
                     .antMatchers("/api/**").hasAnyAuthority(UserRole.ROLE_USER.getRoleName(), UserRole.ROLE_ADMIN.getRoleName())
                     .anyRequest().authenticated()
                     .and().authenticationManager(authenticationManager)
