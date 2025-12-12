@@ -19,6 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -26,6 +27,13 @@ public class SecurityConfig {
   private final UserDetailsService userDetailsService;
   private final PasswordEncoder bCryptPasswordEncoder;
   private final ObjectMapper objectMapper;
+  private static final List<String> ALLOWED_ORIGINS = List.of(
+          "http://localhost:8482",
+          "http://notedesk.ru",
+          "http://api.notedesk.ru",
+          "https://notedesk.ru",
+          "https://api.notedesk.ru"
+  );
 
   @Autowired
   public SecurityConfig(final UserDetailsService userDetailsService,
@@ -78,8 +86,8 @@ public class SecurityConfig {
     final var configuration = new CorsConfiguration();
     configuration.setAllowCredentials(true);
     configuration.setAllowedHeaders(Collections.singletonList("*"));
-    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-    configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    configuration.setAllowedOrigins(ALLOWED_ORIGINS);
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
     final var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
@@ -91,7 +99,10 @@ public class SecurityConfig {
       @Override
       public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS");
+            .allowedOrigins(ALLOWED_ORIGINS.toArray(String[]::new))
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
+            .allowedHeaders("*")
+            .allowCredentials(true);
       }
     };
   }
