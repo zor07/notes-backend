@@ -7,21 +7,24 @@ services:
   notes-backend:
     build: .
     networks: ["notes-backend"]
+    restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://pg_db:5432/db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pg_db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "127.0.0.1:8481:8080"
     depends_on:
       - pg_db
 
   pg_db:
-    image: postgres
-    restart: always
+    image: postgres:16
+    restart: unless-stopped
     networks: ["notes-backend"]
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=db
+    env_file:
+      - .env
     volumes:
       - pg_project:/var/lib/postgresql/data
     ports:
